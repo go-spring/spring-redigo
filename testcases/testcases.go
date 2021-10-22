@@ -14,60 +14,26 @@
  * limitations under the License.
  */
 
-package SpringRedigo_test
+package testcases
 
 import (
 	"context"
 	"testing"
 
-	"github.com/go-spring/spring-base/assert"
 	"github.com/go-spring/spring-core/redis"
 	"github.com/go-spring/spring-redigo"
 	g "github.com/gomodule/redigo/redis"
 )
 
-func getClient(t *testing.T) redis.Client {
+func RunCase(t *testing.T, fn func(t *testing.T, ctx context.Context, c redis.Client)) {
+
 	conn, err := g.Dial("tcp", ":6379")
 	if err != nil {
-		t.Fatal()
+		t.Fatal(err)
 	}
-	return SpringRedigo.NewClient(conn)
-}
 
-func TestClient(t *testing.T) {
-
-	c := getClient(t)
-	var reply interface{}
+	c := SpringRedigo.NewClient(conn)
 	ctx := context.Background()
-
-	reply, err := c.Set(ctx, "name", "king", 0)
-	if err != nil {
-		t.Fatal()
-	}
-	assert.Equal(t, reply, "OK")
-
-	reply, err = c.Get(ctx, "name")
-	if err != nil {
-		t.Fatal()
-	}
-	assert.Equal(t, reply, "king")
-}
-
-func TestHash(t *testing.T) {
-
-	c := getClient(t)
-	var reply interface{}
-	ctx := context.Background()
-
-	reply, err := c.HSet(ctx, "hash", "name", "king")
-	if err != nil {
-		t.Fatal()
-	}
-	assert.Equal(t, reply, int64(0))
-
-	reply, err = c.HGet(ctx, "hash", "name")
-	if err != nil {
-		t.Fatal()
-	}
-	assert.Equal(t, reply, "king")
+	defer c.FlushAll(ctx)
+	fn(t, ctx, c)
 }
