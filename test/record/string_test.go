@@ -19,7 +19,7 @@ package record
 import (
 	"testing"
 
-	"github.com/go-spring/spring-core/redis/record"
+	"github.com/go-spring/spring-core/redis/test/record"
 )
 
 func TestAppend(t *testing.T) {

@@ -19,25 +19,14 @@ package record
 import (
 	"testing"
 
-	"github.com/go-spring/spring-core/redis/record"
+	"github.com/go-spring/spring-core/redis"
+	"github.com/go-spring/spring-redigo"
 )
 
-func TestBitCount(t *testing.T) {
-	RunCase(t, record.BitCount)
-}
-
-func TestBitOpAnd(t *testing.T) {
-	RunCase(t, record.BitOpAnd)
-}
-
-func TestBitPos(t *testing.T) {
-	RunCase(t, record.BitPos)
-}
-
-func TestGetBit(t *testing.T) {
-	RunCase(t, record.GetBit)
-}
-
-func TestSetBit(t *testing.T) {
-	RunCase(t, record.SetBit)
+func RunCase(t *testing.T, fn func(t *testing.T, c redis.Client)) {
+	c, err := SpringRedigo.NewClient(redis.ClientConfig{Port: 6379})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fn(t, c)
 }
